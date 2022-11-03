@@ -47,6 +47,16 @@ function checkForm(array $post) : array {
     return $errores;
 }
 
+if(isset($_POST["Enviar"])){
+    $data["errores"] = checkForm($_POST);
+    $data["input"] = filter_var_array($_POST);
+    if(empty($data["errores"])){
+        $array = json_decode($_POST["datos"],true);
+        $resultado = datosAsign($array);
+        $data["resultado"] = $resultado;
+    }
+}  
+
 include 'views/templates/header.php';
 include 'views/notas.alexandro.view.php';
 include 'views/templates/footer.php';
