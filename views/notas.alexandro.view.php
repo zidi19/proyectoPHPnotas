@@ -4,17 +4,45 @@
 
 </div>
 
-<!-- Content Row -->
-
 <div class="row">
+    <?php
+    if(isset($data["resultado"])){
+    ?>
     <div class="col-12">
         <div class="card shadow mb-4">
             <div
                 class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary"></h6>                                    
+                <h6 class="m-0 font-weight-bold text-primary">Asignaturas</h6>                                    
             </div>
-            <!-- Card Body -->
             <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Módulo</th><th>Media</th><th>Aprobados</th><th>Suspensos</th><th>Máximo</th><th>Mínimo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        foreach ($data["resultado"]["asignaturas"] as $asignatura => $datosAsignatura){
+                        ?>
+                        <tr>
+                            <td><?php echo ucfirst($asignatura); ?></td>
+                            <td><?php echo number_format($datosAsignatura["media"],2,".",","); ?></td>
+                            <td><?php echo $datosAsignatura["aprobados"]; ?></td>
+                            <td><?php echo $datosAsignatura["suspensos"]; ?></td>
+                            <td><?php echo $datosAsignatura["max"]["alumno"]. "  :  " .$datosAsignatura["max"]["nota"]; ?></td>
+                            <td><?php echo $datosAsignatura["min"]["alumno"]. "  :  " .$datosAsignatura["min"]["nota"]; ?></td>
+                        </tr>
+                        <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
+                <?php
+                }
+                if(isset($data["resultado"])){
+                ?>
+                <div class="card-body">
                 <form  method="post" action="./?sec=notas.alexandro">
 
                     <input type="hidden" name="sec" value="formulario" />
