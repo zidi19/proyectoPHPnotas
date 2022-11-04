@@ -57,6 +57,77 @@ if(isset($_POST["Enviar"])){
     }
 }  
 
+function datosAsign(array $array) : array{
+    $resultado = array();
+    $alumnos = array();
+    $alumnosSuspensos = array();
+    foreach ($array as $asignatura => $alumno){
+        $resultado[$asignatura] = array();
+        $aprobados = 0;
+        $suspensos = 0;
+        $notaMaxima = array(
+            "alumno" => " ",
+            "nota" => -1
+        );
+        
+        $notaMinima = array(
+            "alumno" => "",
+            "nota" => 11
+        );
+        $notaAcumulada = 0;
+        $contadorAlumnos = 0;
+        
+        foreach ($alumno as $nombreAlumno => $notas){
+                if(!isset($alumnos[$nombreAlumno])){
+                    $alumnos[$nombreAlumno] = ["aprobados" => 0 , "suspensos" => 0];
+                }
+                $acumulacionNotaAlumnoAsignatura = 0;
+                for($i =0 ;$i<count($notas);$i++){
+                    $acumulacionNotaAlumnoAsignatura += $notas[$i];
+                    
+                    if($notas[$i] > $notaMaxima["nota"]){
+                        $notaMaxima["alumno"] = $nombreAlumno;
+                        $notaMaxima["nota"] = intval($notas[$i]);
+                    }
+                    if($notas[$i] < $notaMinima["nota"]){
+                        $notaMinima["alumno"] = $nombreAlumno;
+                        $notaMinima["nota"] = intval($notas[$i]);
+                    }
+                    
+                }
+                $nota = $acumulacionNotaAlumnoAsignatura/ count($notas);
+                $contadorAlumnos++;
+                $notaAcumulada += $nota;
+
+                if($nota < 5){
+                    $suspensos++;
+                    if(array_key_exists($nombreAlumno, $alumnosSuspensos)){
+                        $alumnosSuspensos[$nombreAlumno]["suspensos"]++;
+                    }
+                    else{
+                        $alumnosSuspensos[$nombreAlumno] = array("suspensos" => 1);
+                    }
+                } else {
+                    $aprobados++;
+                    
+                }
+                if(!array_key_exists($nombreAlumno, $alumnosSuspensos)){
+                    $alumnosSuspensos[$nombreAlumno] = array("suspensos" => 0);
+                }
+        }
+        if($contadorAlumnos > 0){
+            $resultado[$asignatura]["media"] = $notaAcumulada / $contadorAlumnos;
+            $resultado[$asignatura]["max"] = $notaMaxima;
+            $resultado[$asignatura]["min"] = $notaMinima; 
+        }else{
+            $resultado[$asignatura]["media"] = 0;
+        }
+        $resultado[$asignatura]["aprobados"] = $aprobados;
+        $resultado[$asignatura]["suspensos"] = $suspensos;
+    }
+    return array("asignaturas" => $resultado, "alumnos" => $alumnosSuspensos);
+}
+
 include 'views/templates/header.php';
 include 'views/notas.alexandro.view.php';
 include 'views/templates/footer.php';
